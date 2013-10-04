@@ -65,13 +65,13 @@ module RailsFluentLogging
     def add(severity, tags, message, progname, &block)
       return true if severity < level
 
-      log_entity = apply_formatting({
-        severity: SEVERITY_MAP[severity] || SEVERITY_MAP.last,
+      log_entity = {
+        level: SEVERITY_MAP[severity] || SEVERITY_MAP.last,
         tags: make_hash(tags),
         message: (String === message ? message : message.inspect)
-      })
-
-      post_to_fluentd(severity, log_entity) or fallback_log << "#{log_entity}\n"
+      }
+      
+      post_to_fluentd(severity, log_entity) or fallback_log << "#{apply_formatting(log_entity)}\n"
     end
 
     def method_missing(method, *args)
